@@ -2,16 +2,17 @@ const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+const { cpf } = require('cpf-cnpj-validator');
 
 class UserController {
     static async register(req, res) {
         try {
-            const { name, dateBirth, email, cpf, edv, cep, street, number, complement, password, confirmPassword } = req.body;
+            const { name, dateBirth, email, cpfUser, edv, cep, street, number, complement, password, confirmPassword } = req.body;
 
             if (!name) return res.status(400).json({ message: "Nome é obrigatório" });
             if (!dateBirth) return res.status(400).json({ message: "Data de nascimento é obrigatória" });
             if (!email) return res.status(400).json({ message: "Email é obrigatório" });
-            if (!cpf) return res.status(400).json({ message: "CPF é obrigatório" });
+            if (!cpfUser) return res.status(400).json({ message: "CPF é obrigatório" });
             if (!street) return res.status(400).json({ message: "Rua é brigatória" });
             if (!number) return res.status(400).json({ message: "Numero é obrigatório" });
             if (!complement) return res.status(400).json({ message: "Complemento necessario" });
@@ -23,8 +24,13 @@ class UserController {
             const emailExist = await User.findOne({ email: email });
             if (emailExist) return res.status(422).json({ message: "Email já cadastrado" });
             
-            const cpfExist = await User.findOne({ cpf: cpf });
+            const cpfExist = await User.findOne({ cpf: cpfUser });
             if (cpfExist) return res.status(422).json({ message: "CPF já cadastrado" });
+
+            const edvExist = await User.findOne({ edv: edv });
+            if (edvExist) return res.status(422).json({ message: "EDV já cadastrado" });
+
+            if(!cpf.isValid(cpfUser)) return res.status(422).json({ message: "CPF não existe"})
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
@@ -33,7 +39,7 @@ class UserController {
                 name,
                 dateBirth,
                 email,
-                cpf,
+                cpf: cpfUser,
                 edv,
                 password: hashedPassword,
                 cep,
