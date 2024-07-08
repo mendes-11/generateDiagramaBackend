@@ -74,6 +74,36 @@ class UserController {
             res.status(500).send({ message: "Erro ao fazer login", error: error.message });
         }
     }
+
+    static async getUser(req, res){
+        const { id } = req.query;
+        try{
+            const user = await User.findById(id);
+            if(!user) return res.status(404).json({ message: "Usuário não encontrado" })
+            res.status(200).json(user); 
+        } catch (error) {
+            return res.status(500).send({ menssage: "Erro ao retornar o usuário", error: error.menssage });
+        }
+
+    }
+
+    // static async updateUser(req, res){
+    
+    // }
+
+    static async deleteUser(req, res){
+        const { id } = req.query;
+        try{
+            const userID = await User.findById(id);
+            if(!userID) return res.status(404).json({ message: "Usuário não encontrado" });
+
+            await User.findByIdAndDelete(id);
+            res.status(201).send({ message: "Usuário deletado", userID });
+
+        } catch (error){
+            return res.status(500).send({ message: "Erro ao deletar usuário", error: error.message });
+        }
+    }
 }
 
 module.exports = UserController;
