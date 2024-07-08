@@ -38,11 +38,11 @@ class UserController {
                 email,
                 cpf,
                 edv,
-                password: hashedPassword,
                 cep,
                 street,
                 number,
                 complement,
+                password: hashedPassword,
                 createdAt: Date.now()
             });
 
@@ -97,7 +97,7 @@ class UserController {
     
             const user = await User.findById(id);
             if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-    
+            // ATUALIZA ITEM POR ITEM
             Object.keys(updateFields).forEach(key => {
                 user[key] = updateFields[key];
             });
