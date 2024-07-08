@@ -87,9 +87,30 @@ class UserController {
 
     }
 
-    // static async updateUser(req, res){
+    static async updateUser(req, res) {
+        const { id } = req.query;
+        const updateFields = req.body;
     
-    // }
+        try {
+            
+            if (!id) return res.status(400).json({ message: "É necessário fornecer um ID para atualizar o usuário" });
+    
+            const user = await User.findById(id);
+            if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+    
+            Object.keys(updateFields).forEach(key => {
+                user[key] = updateFields[key];
+            });
+    
+            await user.save();
+    
+            res.status(200).json({ message: "Usuário atualizado com sucesso", updatedUser: user });
+    
+        } catch (error) {
+            res.status(500).send({ message: "Erro ao atualizar usuário", error: error.message });
+        }
+    }
+    
 
     static async deleteUser(req, res){
         const { id } = req.query;

@@ -6,6 +6,7 @@ router
     .post("/register", UserController.register)
     .post("/login", UserController.login)
     .get("/", UserController.getUser)
+    .put("/",UserController.updateUser)
     .delete("/delete", UserController.deleteUser)
 
 module.exports = router;
