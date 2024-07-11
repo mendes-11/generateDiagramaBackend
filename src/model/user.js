@@ -7,10 +7,6 @@ const user = mongoose.model(
             type: String,
             requerid: true
         },
-        dateBirth: {
-            type: Date,
-            requerid: true
-        },
         email: {
             type: String,
             required: true
@@ -20,7 +16,7 @@ const user = mongoose.model(
             required: true
         },
         edv: {
-            type: Number,
+            type: String,
             required: true
         },
         cep: {
@@ -32,12 +28,8 @@ const user = mongoose.model(
             required: true
         },
         number: {
-            type: Number,
-            required: true
-        },
-        complement: {
             type: String,
-            require: false
+            required: true
         },
         password: {
             type: String,

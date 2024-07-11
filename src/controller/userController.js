@@ -7,16 +7,15 @@ const isValidCep = require("@brazilian-utils/is-valid-cep");
 class UserController {
     static async register(req, res) {
         try {
-            const { name, dateBirth, email, cpf, edv, cep, street, number, complement, password, confirmPassword } = req.body;
+            const { name, email, cpf, edv, cep, street, number, password, confirmPassword } = req.body;
             // VEREFICA SE ELES FORAM INSERIDOS NO BODY.
-            const requiredFields = ['name', 'dateBirth', 'email', 'cpf', 'edv', 'cep', 'street', 'number', 'complement', 'password', 'confirmPassword'];
+            const requiredFields = ['name', 'email', 'cpf', 'edv', 'cep', 'street', 'number', 'password', 'confirmPassword'];
             for (let field of requiredFields) {
                 if (!req.body[field]) {
                     return res.status(400).json({ message: `${field} é obrigatório` });
                 }
             }
             if (!isValidEmail(email)) return res.status(400).json({ message: "Email inválido" });
-            if (!isValidDate(dateBirth)) return res.status(400).json({ message: "Data de nascimento inválida" });
             if (!cpfValidator.isValid(cpf)) return res.status(400).json({ message: "CPF inválido" });
             if (!isValidCep(cep)) return res.status(400).json({ message: "CEP inválido" });
             if (password !== confirmPassword) return res.status(400).json({ message: "As senhas não são iguais" });
@@ -27,21 +26,25 @@ class UserController {
             const cpfExist = await User.findOne({ cpf: cpf });
             if (cpfExist) return res.status(422).json({ message: "CPF já cadastrado" });
 
+            
             const edvExist = await User.findOne({ edv: edv });
             if (edvExist) return res.status(422).json({ message: "EDV já cadastrado" });
-
+            
+            const hashedCpf = await bcrypt.hash(cpf, 10);
+            const hashedEdv = await bcrypt.hash(edv, 10);
+            const hashedCep = await bcrypt.hash(cep, 10);
+            const hashedStreet = await bcrypt.hash(street, 10);
+            const hashedNumber = await bcrypt.hash(number, 10);
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const newUser = new User({
                 name,
-                dateBirth,
                 email,
-                cpf,
-                edv,
-                cep,
-                street,
-                number,
-                complement,
+                cpf: hashedCpf,
+                edv: hashedEdv,
+                cep: hashedCep,
+                street: hashedStreet,
+                number: hashedNumber,
                 password: hashedPassword,
                 createdAt: Date.now()
             });
@@ -131,9 +134,4 @@ module.exports = UserController;
 
 function isValidEmail(email) {
     return email.includes('@');
-}
-
-
-function isValidDate(date) {
-    return /\d{4}-\d{2}-\d{2}/.test(date);
 }
