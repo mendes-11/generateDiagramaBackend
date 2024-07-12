@@ -56,18 +56,18 @@ class UserController {
     static async login(req, res) {
         try {
             const { edv, password } = req.body;
-
+    
             if (!edv || !password) return res.status(400).json({ message: "EDV e senha são obrigatórios" });
-
+    
             const user = await User.findOne({ edv: edv });
             if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-
+    
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) return res.status(401).json({ message: "Senha inválida" });
-
+    
             const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: '24h' });
-
-            res.status(200).json({ message: "Login bem-sucedido", token });
+    
+            res.status(200).json({ message: "Login bem-sucedido", token, userId: user._id });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Erro ao fazer login", error: error.message });
