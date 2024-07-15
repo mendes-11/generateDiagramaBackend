@@ -76,7 +76,7 @@ class UserController {
 
 
     static async getUser(req, res) {
-        const { id } = req.query;
+        const { id } = req.params;
         try {
             const user = await User.findById(id);
             if (!user) return res.status(404).json({ message: "Usuário não encontrado" })
@@ -88,7 +88,7 @@ class UserController {
     }
 
     static async updateUser(req, res) {
-        const { id } = req.query;
+        const { id } = req.params;
         const updateFields = req.body;
 
         try {
@@ -113,7 +113,7 @@ class UserController {
 
 
     static async deleteUser(req, res) {
-        const { id } = req.query;
+        const { id } = req.params;
         try {
             const userID = await User.findById(id);
             if (!userID) return res.status(404).json({ message: "Usuário não encontrado" });
