@@ -65,7 +65,7 @@ class UserController {
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) return res.status(401).json({ message: "Senha inválida" });
     
-            const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: 86400 });
     
             res.status(200).json({ message: "Login bem-sucedido", token, userId: user._id });
         } catch (error) {
