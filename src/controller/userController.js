@@ -67,7 +67,7 @@ class UserController {
     
             const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: 86400 });
     
-            res.status(200).json({ message: "Login bem-sucedido", token, userId: user._id });
+            res.status(200).json({ message: "Login bem-sucedido", token});
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Erro ao fazer login", error: error.message });
