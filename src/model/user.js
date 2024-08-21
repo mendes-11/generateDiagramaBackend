@@ -35,6 +35,10 @@ const user = mongoose.model(
             type: String,
             required: true
         },
+        countDiagrams: {
+            type: Number,
+            required: true
+        },
         createdAt: {
             type: Date,
             default: Date.now
