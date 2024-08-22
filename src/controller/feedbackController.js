@@ -4,9 +4,9 @@ const Feedback = require("../model/feedback");
 class feedbackController {
   static async postFeedback(req, res) {
     try {
-      const { userID, type, message, score } = req.body;
+      const { userID, type, message } = req.body;
 
-      const requiredFields = ["userID", "type", "message", "score"];
+      const requiredFields = ["userID", "type", "message"];
       for (let field of requiredFields) {
         if (!req.body[field]) {
           return res.status(400).json({ message: `${field} é obrigatório` });
@@ -23,7 +23,6 @@ class feedbackController {
         user: userID,
         type,
         message,
-        score,
         date: Date.now(),
       });
 

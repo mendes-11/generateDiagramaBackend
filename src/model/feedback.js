@@ -14,10 +14,6 @@ const feedbackSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    score: {
-        type: String,
-        required: true
-    },
     date: {
         type: Date,
         required: Date.now
