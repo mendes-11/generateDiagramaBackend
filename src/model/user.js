@@ -37,7 +37,7 @@ const user = mongoose.model(
         },
         countDiagrams: {
             type: Number,
-            required: true
+            required: false
         },
         createdAt: {
             type: Date,
