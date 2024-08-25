@@ -1,16 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
-const { cpf: cpfValidator } = require('cpf-cnpj-validator');
 const isValidCep = require("@brazilian-utils/is-valid-cep");
 
 class UserController {
     static async register(req, res) {
         try {
-            const { name, email, cpf, edv, cep, street, number, password, confirmPassword } = req.body;
+            const { name, email, password, confirmPassword, cep, street, number } = req.body;
 
-            // Verifica se todos os campos obrigatórios foram inseridos
-            const requiredFields = ['name', 'email', 'cpf', 'edv', 'cep', 'street', 'number', 'password', 'confirmPassword'];
+            const requiredFields = ["name", "email", "password", "confirmPassword", "cep", "street", "number"];
             for (let field of requiredFields) {
                 if (!req.body[field]) {
                     return res.status(400).json({ message: `${field} é obrigatório` });
@@ -18,30 +16,24 @@ class UserController {
             }
 
             if (!isValidEmail(email)) return res.status(400).json({ message: "Email inválido" });
-            if (!cpfValidator.isValid(cpf)) return res.status(400).json({ message: "CPF inválido" });
-            if (!isValidCep(cep)) return res.status(400).json({ message: "CEP inválido" });
-            if (password !== confirmPassword) return res.status(400).json({ message: "As senhas não são iguais" });
-
             const emailExist = await User.findOne({ email: email });
             if (emailExist) return res.status(422).json({ message: "Email já cadastrado" });
 
-            const cpfExist = await User.findOne({ cpf: cpf });
-            if (cpfExist) return res.status(422).json({ message: "CPF já cadastrado" });
+            if (!isValidCep(cep)) return res.status(400).json({ message: "CEP inválido" });
+            if (password !== confirmPassword) return res.status(400).json({ message: "As senhas não são iguais" });
 
-            const edvExist = await User.findOne({ edv: edv });
-            if (edvExist) return res.status(422).json({ message: "EDV já cadastrado" });
+
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const newUser = new User({
                 name,
                 email,
-                cpf,
-                edv,
+                password: hashedPassword,
                 cep,
                 street,
                 number,
-                password: hashedPassword,
+                countDiagrams: 0,
                 createdAt: Date.now()
             });
 
@@ -55,11 +47,11 @@ class UserController {
 
     static async login(req, res) {
         try {
-            const { edv, password } = req.body;
+            const { email, password } = req.body;
     
-            if (!edv || !password) return res.status(400).json({ message: "EDV e senha são obrigatórios" });
+            if (!email || !password) return res.status(400).json({ message: "email e senha são obrigatórios" });
     
-            const user = await User.findOne({ edv: edv });
+            const user = await User.findOne({ email: email });
             if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
     
             const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -97,7 +89,6 @@ class UserController {
 
             const user = await User.findById(id);
             if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
-            // ATUALIZA ITEM POR ITEM
             Object.keys(updateFields).forEach(key => {
                 user[key] = updateFields[key];
             });

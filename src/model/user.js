@@ -11,11 +11,7 @@ const user = mongoose.model(
             type: String,
             required: true
         },
-        cpf: {
-            type: String,
-            required: true
-        },
-        edv: {
+        password: {
             type: String,
             required: true
         },
@@ -31,13 +27,9 @@ const user = mongoose.model(
             type: String,
             required: true
         },
-        password: {
-            type: String,
-            required: true
-        },
         countDiagrams: {
             type: Number,
-            required: false
+            required: true
         },
         createdAt: {
             type: Date,
