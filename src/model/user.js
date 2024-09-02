@@ -35,7 +35,6 @@ const user = mongoose.model(
             type: Date,
             default: Date.now
         }
-
     })
 );
 
