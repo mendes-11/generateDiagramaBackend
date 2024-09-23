@@ -35,6 +35,22 @@ class feedbackController {
         .send({ message: "Erro ao receber o feedback!", error: error.message });
     }
   }
+
+  static async getFeedback(req, res) {
+    try {
+      const feedbacks = await Feedback.find();
+      
+      if (feedbacks.length === 0) {
+        return res.status(404).json({ message: "Nenhum feedback encontrado" });
+      }
+  
+      res.status(200).json(feedbacks);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Erro ao buscar feedbacks!", error: error.message });
+    }
+  }
+  
 }
 
 module.exports = feedbackController;
