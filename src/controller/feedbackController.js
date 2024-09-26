@@ -6,37 +6,43 @@ class feedbackController {
   static async postFeedback(req, res) {
     try {
       const { userID, type, message } = req.body;
-
+  
       const requiredFields = ["userID", "type", "message"];
       for (let field of requiredFields) {
         if (!req.body[field]) {
           return res.status(400).json({ message: `${field} é obrigatório` });
         }
       }
-      const id = jwt.decode(userID);
-
+  
+      const decoded = jwt.decode(userID);
+      if (!decoded || !decoded.id) {
+        return res.status(400).json({ message: "Token inválido" });
+      }
+      
+      const id = decoded.id;
       const user = await User.findById(id);
-      if (!user)
+      if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado" });
-
-      res.status(200).json(user);
-
+      }
+  
       const newFeedback = new Feedback({
-        user: userID,
+        user: id,
         type,
         message,
         date: Date.now(),
       });
-
+  
       await newFeedback.save();
-      res.status(201).send({ message: "Feedback feito com sucesso" });
+      return res.status(201).send({ message: "Feedback feito com sucesso" });
+      
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .send({ message: "Erro ao receber o feedback!", error: error.message });
+      if (!res.headersSent) {
+        return res.status(500).send({ message: "Erro ao receber o feedback!", error: error.message });
+      }
     }
   }
+  
 
   static async getFeedback(req, res) {
     try {
