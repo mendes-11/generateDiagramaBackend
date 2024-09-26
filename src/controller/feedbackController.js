@@ -1,5 +1,6 @@
 const User = require("../model/user");
 const Feedback = require("../model/feedback");
+const jwt = require("jsonwebtoken");
 
 class feedbackController {
   static async postFeedback(req, res) {
@@ -12,8 +13,9 @@ class feedbackController {
           return res.status(400).json({ message: `${field} é obrigatório` });
         }
       }
+      const id = jwt.decode(userID);
 
-      const user = await User.findById(userID);
+      const user = await User.findById(id);
       if (!user)
         return res.status(404).json({ message: "Usuário não encontrado" });
 
